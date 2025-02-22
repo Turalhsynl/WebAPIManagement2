@@ -33,9 +33,10 @@ public class UserController(ISender sender) : Controller
         return Ok(await _sender.Send(request));
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Remove([FromBody] Remove.Command request)
+    [HttpDelete]
+    public async Task<IActionResult> Remove([FromQuery] Remove.Command request)
     {
         return Ok(await _sender.Send(request));
     }
+
 }

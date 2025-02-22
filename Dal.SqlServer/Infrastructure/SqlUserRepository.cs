@@ -51,24 +51,27 @@ namespace Dal.SqlServer.Infrastructure
 
         public bool Remove(int id, int deletedBy)
         {
-            var checkSql = @"SELECT Id FROM Users WHERE Id = @id AND IsDeleted=0";
+            var checkSql = @"SELECT Id FROM Users WHERE Id = @id AND IsDeleted = 0";
             var sql = @"UPDATE Users
-                        SET IsDeleted=1,
-                        DeletedBy = @deletedBy,
-                        DeletedDate = GETDATE()
-                        WHERE Id=@id";
+                SET IsDeleted = 1,
+                    DeletedBy = @deletedBy,
+                    DeletedDate = GETDATE()
+                WHERE Id = @id";
+
             using var conn = OpenConnection();
             using var transaction = conn.BeginTransaction();
 
-            var userId = conn.ExecuteScalar<int?>(checkSql, id, transaction);
+            var userId = conn.ExecuteScalar<int?>(checkSql, new { id }, transaction);
 
             if (!userId.HasValue)
                 return false;
 
             var affectRows = conn.Execute(sql, new { id, deletedBy }, transaction);
             transaction.Commit();
+
             return affectRows > 0;
         }
+
 
         public void Update(User user)
         {
